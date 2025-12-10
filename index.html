@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="UTF-8">
+  <title>Lajittelutehtävä – demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    :root {
+      --bg: #ffffff;
+      --text: #111827;
+      --muted: #4b5563;
+      --accent: #16a34a; /* raikas vihreä */
+      --accent-soft: #dcfce7;
+      --border: #e5e7eb;
+      --shadow-soft: 0 4px 10px rgba(0,0,0,0.03);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* Yläpalkki mobiilia varten */
+
+    .top-bar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: #f9fafb;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .top-bar-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0.6rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .brand {
+      font-weight: 600;
+      color: var(--accent);
+      font-size: 1rem;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .menu-toggle {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 0.3rem 0.6rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.3rem;
+      font-size: 0.9rem;
+      color: var(--muted);
+      cursor: pointer;
+    }
+
+    .menu-toggle-icon {
+      font-size: 1.1rem;
+      line-height: 1;
+    }
+
+    .menu-toggle-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    /* Päälayout: sivupalkki + sisältö */
+
+    .layout {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: stretch;
+      padding: 0 1rem 2.5rem;
+      gap: 1.5rem;
+    }
+
+    aside.sidebar {
+      width: 220px;
+      padding-top: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .side-menu {
+      border-radius: 0.75rem;
+      border: 1px solid var(--border);
+      background: #f9fafb;
+      box-shadow: var(--shadow-soft);
+      padding: 0.75rem 0.75rem 0.75rem;
+    }
+
+    .side-title {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+      padding: 0.25rem 0.5rem;
+    }
+
+    .side-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .side-link {
+      display: block;
+      width: 100%;
+      text-align: left;
+      border: none;
+      background: transparent;
+      padding: 0.4rem 0.6rem;
+      border-radius: 0.5rem;
+      font-size: 0.95rem;
+      color: var(--muted);
+      cursor: default; /* placeholder, ei toimintaa vielä */
+      transition: background 0.15s, color 0.15s, transform 0.05s;
+    }
+
+    .side-link:hover {
+      background: var(--accent-soft);
+      color: var(--accent);
+      transform: translateX(2px);
+    }
+
+    .side-link.active {
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    main {
+      flex: 1;
+      padding-top: 1.5rem;
+      min-width: 0;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+    }
+
+    p.lead {
+      margin-top: 0;
+      color: var(--muted);
+    }
+
+    .info-box {
+      margin-top: 1rem;
+      padding: 0.75rem 1rem;
+      border-radius: 0.75rem;
+      background: var(--accent-soft);
+      border: 1px solid #bbf7d0;
+      font-size: 0.95rem;
+    }
+
+    .h5p-block {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      border-radius: 0.75rem;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .h5p-block h2 {
+      margin-top: 0;
+      font-size: 1.2rem;
+      color: var(--accent);
+    }
+
+    .h5p-block p {
+      margin-top: 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    /* Skaalattava H5P-alue: peruskoko 620x450, skaalautuu leveyden mukaan */
+    .h5p-frame-outer {
+      margin-top: 1rem;
+      max-width: 100%;
+      overflow: hidden; /* piilottaa mahdolliset pikselin yli menevät osat */
+    }
+
+    .h5p-frame-inner {
+      position: relative;
+      width: 620px;   /* H5P:n perusleveys */
+      height: 450px;  /* H5P:n peruskorkeus (sis. Tarkista-nappi) */
+      transform-origin: 0 0; /* skaalaus vasemmasta yläkulmasta */
+    }
+
+    iframe#h5p-frame {
+      position: absolute;
+      inset: 0;
+      width: 620px;
+      height: 450px;
+      border: none;
+    }
+
+    /* Mobiilinäkymä */
+
+    @media (max-width: 800px) {
+      .layout {
+        padding: 0 0.75rem 2.5rem;
+        gap: 0.75rem;
+      }
+
+      aside.sidebar {
+        position: fixed;
+        top: 48px; /* top-barin korkeus suurin piirtein */
+        left: 0;
+        width: 220px;
+        height: calc(100vh - 48px);
+        padding-top: 0.75rem;
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+        background: #f9fafb;
+        border-right: 1px solid var(--border);
+        box-shadow: 6px 0 18px rgba(0,0,0,0.1);
+        transform: translateX(-100%);
+        transition: transform 0.2s ease-out;
+        z-index: 30;
+      }
+
+      body.nav-open aside.sidebar {
+        transform: translateX(0);
+      }
+
+      main {
+        padding-top: 1rem;
+      }
+
+      .h5p-frame-outer {
+        margin-top: 0.75rem;
+      }
+    }
+
+    /* Desktop: ei hampurilaispainiketta, sivupalkki näkyvissä oletuksena */
+
+    @media (min-width: 801px) {
+      .menu-toggle {
+        display: none;
+      }
+
+      .top-bar {
+        position: static;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header class="top-bar">
+  <div class="top-bar-inner">
+    <div class="brand">Lajittelutehtävä</div>
+    <button class="menu-toggle" type="button" aria-label="Avaa valikko">
+      <span class="menu-toggle-icon">☰</span>
+      <span class="menu-toggle-label">Valikko</span>
+    </button>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="sidebar">
+    <nav class="side-menu" aria-label="Lajittelukategoriat">
+      <div class="side-title">Lajittelukategoriat</div>
+      <div class="side-list">
+        <button class="side-link active" type="button">Biojäte</button>
+        <button class="side-link" type="button">Muovi</button>
+        <button class="side-link" type="button">Paperi</button>
+        <button class="side-link" type="button">Metalli</button>
+      </div>
+    </nav>
+  </aside>
+
+  <main>
+    <h1>Lajittelutehtävä</h1>
+    <p class="lead">
+      Tee alla oleva lajittelutehtävä raahaamalla jätteet oikeisiin keräysastioihin.
+    </p>
+
+    <div class="info-box">
+      <strong>Ohje:</strong> Tarkastele jokaista jätettä ja raahaa se oikeaan
+      lajittelukategoriaan. Kun olet valmis, tarkista vastauksesi tehtävän
+      palautepainikkeella. Voit yrittää tehtävää useamman kerran.
+    </div>
+
+    <div class="h5p-block">
+      <h2>Lajittele jätteet oikein</h2>
+
+      <div class="h5p-frame-outer">
+        <div class="h5p-frame-inner" id="h5p-inner">
+          <!-- Oletus: testi.html samassa kansiossa -->
+          <iframe
+            id="h5p-frame"
+            src="testi.html"
+            title="Lajittelutehtävä – H5P"
+            frameborder="0"
+            scrolling="no"
+            allow="fullscreen"
+            allowfullscreen="allowfullscreen">
+          </iframe>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+  // Hampurilaisvalikon togglaus mobiilissa
+  (function () {
+    const toggle = document.querySelector('.menu-toggle');
+    if (!toggle) return;
+
+    toggle.addEventListener('click', function () {
+      document.body.classList.toggle('nav-open');
+    });
+
+    // Sulje valikko, jos ikkuna kasvaa desktopiksi
+    window.addEventListener('resize', function () {
+      if (window.innerWidth > 800) {
+        document.body.classList.remove('nav-open');
+      }
+    });
+  })();
+
+  // Skaalaa H5P-iframeä suhteessa käytettävissä olevaan leveyteen
+  (function () {
+    const inner = document.getElementById('h5p-inner');
+    if (!inner) return;
+
+    const BASE_WIDTH = 620;  // H5P:n perusleveys
+    const BASE_HEIGHT = 450; // H5P:n peruskorkeus (sis. Tarkista-nappi)
+
+    function resizeH5P() {
+      const outer = inner.parentElement;
+      if (!outer) return;
+
+      const available = outer.clientWidth || outer.offsetWidth || BASE_WIDTH;
+      const scale = available / BASE_WIDTH;
+
+      inner.style.transform = 'scale(' + scale + ')';
+      inner.style.width = BASE_WIDTH + 'px';
+      inner.style.height = BASE_HEIGHT + 'px';
+
+      outer.style.height = (BASE_HEIGHT * scale) + 'px';
+    }
+
+    window.addEventListener('load', resizeH5P);
+    window.addEventListener('resize', function () {
+      setTimeout(resizeH5P, 100);
+    });
+  })();
+</script>
+
+</body>
+</html>
