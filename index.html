@@ -2,7 +2,7 @@
 <html lang="fi">
 <head>
   <meta charset="UTF-8">
-  <title>Lajittelutehtävä – demo</title>
+  <title>Kierrätysmestari</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
@@ -10,8 +10,8 @@
       --bg: #ffffff;
       --text: #111827;
       --muted: #4b5563;
-      --accent: #16a34a; /* raikas vihreä */
-      --accent-soft: #dcfce7;
+      --accent: #6DB339; /* uusi vihreä brändiväri */
+      --accent-soft: #e0f3d4;
       --border: #e5e7eb;
       --shadow-soft: 0 4px 10px rgba(0,0,0,0.03);
     }
@@ -41,19 +41,53 @@
     .top-bar-inner {
       max-width: 1100px;
       margin: 0 auto;
-      padding: 0.6rem 1rem;
+      padding: 1rem 1rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 1rem;
     }
 
-    .brand {
-      font-weight: 600;
-      color: var(--accent);
-      font-size: 1rem;
-      letter-spacing: 0.03em;
-      text-transform: uppercase;
+    .brand-box {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .brand-logo {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 2px solid var(--accent-soft);
+      flex-shrink: 0;
+      background: #ffffff;
+    }
+
+    .brand-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
+    }
+
+.brand-name {
+  font-weight: 600;
+  color: var(--accent);
+  font-size: 1rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+    .brand-sub {
+      font-size: 0.75rem;
+      color: var(--muted);
     }
 
     .menu-toggle {
@@ -68,6 +102,7 @@
       font-size: 0.9rem;
       color: var(--muted);
       cursor: pointer;
+      background: #ffffff;
     }
 
     .menu-toggle-icon {
@@ -93,7 +128,7 @@
     }
 
     aside.sidebar {
-      width: 220px;
+      width: 240px;
       padding-top: 1.5rem;
       flex-shrink: 0;
     }
@@ -154,7 +189,7 @@
     }
 
     h1 {
-      font-size: 1.8rem;
+      font-size: 1.9rem;
       margin-bottom: 0.5rem;
     }
 
@@ -168,7 +203,7 @@
       padding: 0.75rem 1rem;
       border-radius: 0.75rem;
       background: var(--accent-soft);
-      border: 1px solid #bbf7d0;
+      border: 1px solid #cbe6b0;
       font-size: 0.95rem;
     }
 
@@ -193,18 +228,39 @@
       font-size: 0.95rem;
     }
 
+    /* Video */
+
+    .video-wrapper {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9-suhde */
+  margin: 1rem 0;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000; /* näyttää siistimmältä ennen kuin video latautuu */
+}
+
+.video-wrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+
     /* Skaalattava H5P-alue: peruskoko 620x450, skaalautuu leveyden mukaan */
     .h5p-frame-outer {
       margin-top: 1rem;
       max-width: 100%;
-      overflow: hidden; /* piilottaa mahdolliset pikselin yli menevät osat */
+      overflow: hidden;
     }
 
     .h5p-frame-inner {
       position: relative;
       width: 620px;   /* H5P:n perusleveys */
       height: 450px;  /* H5P:n peruskorkeus (sis. Tarkista-nappi) */
-      transform-origin: 0 0; /* skaalaus vasemmasta yläkulmasta */
+      transform-origin: 0 0;
     }
 
     iframe#h5p-frame {
@@ -225,10 +281,10 @@
 
       aside.sidebar {
         position: fixed;
-        top: 48px; /* top-barin korkeus suurin piirtein */
+        top: 56px; /* top-bar arvioitu korkeus */
         left: 0;
-        width: 220px;
-        height: calc(100vh - 48px);
+        width: 240px;
+        height: calc(100vh - 56px);
         padding-top: 0.75rem;
         padding-left: 0.75rem;
         padding-right: 0.75rem;
@@ -270,7 +326,16 @@
 
 <header class="top-bar">
   <div class="top-bar-inner">
-    <div class="brand">Lajittelutehtävä</div>
+    <div class="brand-box">
+      <div class="brand-logo">
+        <!-- logo.jpg samassa kansiossa kuin tämä HTML -->
+        <img src="logo.png" alt="Kierrätysmestari-logo">
+      </div>
+      <div class="brand-text">
+        <div class="brand-name">Kierrätysmestari</div>
+      </div>
+    </div>
+
     <button class="menu-toggle" type="button" aria-label="Avaa valikko">
       <span class="menu-toggle-icon">☰</span>
       <span class="menu-toggle-label">Valikko</span>
@@ -280,31 +345,51 @@
 
 <div class="layout">
   <aside class="sidebar">
-    <nav class="side-menu" aria-label="Lajittelukategoriat">
-      <div class="side-title">Lajittelukategoriat</div>
+    <nav class="side-menu" aria-label="Sivun osiot">
+      <div class="side-title">Sisältö</div>
       <div class="side-list">
-        <button class="side-link active" type="button">Biojäte</button>
+        <button class="side-link active" type="button">Tervetuloa</button>
+        <button class="side-link" type="button">Kierrättämisen perusteet</button>
+        <button class="side-link" type="button">Biojäte</button>
         <button class="side-link" type="button">Muovi</button>
-        <button class="side-link" type="button">Paperi</button>
+        <button class="side-link" type="button">Paperi ja kartonki</button>
+        <button class="side-link" type="button">Paristot ja akut</button>
         <button class="side-link" type="button">Metalli</button>
+        <button class="side-link" type="button">SER</button>
+        <button class="side-link" type="button">Minä ja kestävä tulevaisuus</button>
       </div>
     </nav>
   </aside>
 
   <main>
-    <h1>Lajittelutehtävä</h1>
+    <h1>Kierrätysmestari</h1>
     <p class="lead">
-      Tee alla oleva lajittelutehtävä raahaamalla jätteet oikeisiin keräysastioihin.
+      Tällä sivulla harjoittelet jätteiden lajittelua ja kestävän arjen valintoja
+      interaktiivisen tehtävän avulla.
     </p>
 
+<div class="video-wrapper">
+  <iframe 
+    src="https://www.youtube.com/embed/PEmurgkQKDpRbZl3"
+    title="YouTube-video"
+    frameborder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    allowfullscreen>
+  </iframe>
+</div>
+
     <div class="info-box">
-      <strong>Ohje:</strong> Tarkastele jokaista jätettä ja raahaa se oikeaan
-      lajittelukategoriaan. Kun olet valmis, tarkista vastauksesi tehtävän
-      palautepainikkeella. Voit yrittää tehtävää useamman kerran.
+      <strong>Ohje:</strong> Lue tehtävän ohjeet huolellisesti ja raahaa jätteet
+      oikeisiin keräysastioihin. Voit tehdä tehtävän useamman kerran ja tarkistaa
+      vastauksesi palautepainikkeella.
     </div>
 
     <div class="h5p-block">
-      <h2>Lajittele jätteet oikein</h2>
+      <h2>Lajittelutehtävä: Biojäte ja muut jätteet</h2>
+      <p>
+        Alla oleva harjoitus on toteutettu H5P:llä Lumissa ja upotettu tälle
+        sivulle erillisenä <code>testi.html</code>-tiedostona.
+      </p>
 
       <div class="h5p-frame-outer">
         <div class="h5p-frame-inner" id="h5p-inner">
